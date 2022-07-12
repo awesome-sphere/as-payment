@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/awesome-sphere/as-payment/db"
 	"github.com/awesome-sphere/as-payment/jwt"
+	"github.com/awesome-sphere/as-payment/kafka"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	// initialze database
 	db.InitializeDatabase()
 	jwt.InitializeJWTSettings()
+	kafka.InitializeKafka()
 
 	router.Run(":9003")
 }
