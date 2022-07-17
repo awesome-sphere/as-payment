@@ -15,10 +15,10 @@ import (
 var TOPIC string
 var PARTITION int
 
-func PushMessage(topic string, n_partition string, value *MessageInterface) {
+func PushMessage(value *MessageInterface) (bool, error) {
 	config := kafka.WriterConfig{
 		Brokers:          []string{"localhost:9092"},
-		Topic:            topic,
+		Topic:            TOPIC,
 		Balancer:         &kafka.LeastBytes{},
 		WriteTimeout:     10 * time.Second,
 		ReadTimeout:      10 * time.Second,
@@ -33,13 +33,15 @@ func PushMessage(topic string, n_partition string, value *MessageInterface) {
 	err := writer_connector.WriteMessages(
 		context.Background(),
 		kafka.Message{
-			Key:   []byte(n_partition),
+			Key:   []byte(strconv.Itoa(value.TheaterId)),
 			Value: new_byte_buffer.Bytes(),
 		},
 	)
 	if err != nil {
 		panic(err.Error())
+		return false, err
 	}
+	return true, nil
 }
 
 func ListTopics(connector *kafka.Conn) map[string]*TopicInterface {
@@ -65,8 +67,9 @@ func isExisted(connector *kafka.Conn, topic string) bool {
 }
 
 func InitializeKafka() {
-	TOPIC := utils.GetenvOr("KAFKA_TOPIC", "payment")
-	PARTITION, err := strconv.Atoi(utils.GetenvOr("KAFKA_TOPIC_PARTITION", "5"))
+	TOPIC = utils.GetenvOr("KAFKA_TOPIC", "payment")
+	var err error
+	PARTITION, err = strconv.Atoi(utils.GetenvOr("KAFKA_TOPIC_PARTITION", "5"))
 	if err != nil {
 		panic(err.Error())
 	}

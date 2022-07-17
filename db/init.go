@@ -17,7 +17,7 @@ func InitializeDatabase() {
 	dbPassword := utils.GetenvOr("POSTGRES_PASSWORD", "securepassword")
 	dbHost := utils.GetenvOr("POSTGRES_HOST", "localhost")
 	dbPort := utils.GetenvOr("POSTGRES_PORT", "5432")
-	dbName := utils.GetenvOr("POSTGRES_DB", "as-user") // FIXME: change the database when we make one
+	dbName := utils.GetenvOr("POSTGRES_DB", "as-cinema") // FIXME: change the database when we make one
 
 	dbURL := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s",

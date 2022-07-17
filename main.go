@@ -4,6 +4,7 @@ import (
 	"github.com/awesome-sphere/as-payment/db"
 	"github.com/awesome-sphere/as-payment/jwt"
 	"github.com/awesome-sphere/as-payment/kafka"
+	"github.com/awesome-sphere/as-payment/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,5 +18,6 @@ func main() {
 	jwt.InitializeJWTSettings()
 	kafka.InitializeKafka()
 
+	router.POST("/payment/submit-payment", service.TicketPayment)
 	router.Run(":9003")
 }
