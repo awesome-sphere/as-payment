@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/awesome-sphere/as-payment/db"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -37,7 +36,7 @@ func readerRead(r *kafka.Reader) {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price, val.Duration)
+		// db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price, val.Duration)
 	}
 }
 
