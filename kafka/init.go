@@ -14,10 +14,11 @@ import (
 
 var TOPIC string
 var PARTITION int
+var KAFKA_ADDR string
 
 func PushMessage(value *MessageInterface) (bool, error) {
 	config := kafka.WriterConfig{
-		Brokers:          []string{"localhost:9092"},
+		Brokers:          []string{KAFKA_ADDR},
 		Topic:            TOPIC,
 		Balancer:         &kafka.LeastBytes{},
 		WriteTimeout:     10 * time.Second,
@@ -38,7 +39,6 @@ func PushMessage(value *MessageInterface) (bool, error) {
 		},
 	)
 	if err != nil {
-		panic(err.Error())
 		return false, err
 	}
 	return true, nil
@@ -70,11 +70,12 @@ func InitializeKafka() {
 	TOPIC = utils.GetenvOr("KAFKA_TOPIC", "payment")
 	var err error
 	PARTITION, err = strconv.Atoi(utils.GetenvOr("KAFKA_TOPIC_PARTITION", "5"))
+	KAFKA_ADDR = utils.GetenvOr("KAFKA_ADDR", "localhost:9092")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	conn, err := kafka.Dial("tcp", "localhost:9092")
+	conn, err := kafka.Dial("tcp", KAFKA_ADDR)
 	if err != nil {
 		panic(err.Error())
 	}
