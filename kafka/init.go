@@ -7,7 +7,8 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-var TOPIC string
+var CREATE_ORDER_TOPIC string
+var UPDATE_ORDER_TOPIC string
 var PARTITION int
 var KAFKA_ADDR string
 
@@ -33,8 +34,26 @@ func isExisted(connector *kafka.Conn, topic string) bool {
 	return ok
 }
 
+func initializeTopic(conn *kafka.Conn, topic string) {
+	if !isExisted(conn, topic) {
+		topicConfigs := []kafka.TopicConfig{
+			{
+				Topic:             topic,
+				NumPartitions:     PARTITION,
+				ReplicationFactor: 1,
+			},
+		}
+
+		err := conn.CreateTopics(topicConfigs...)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+}
+
 func InitializeKafka() {
-	TOPIC = utils.GetenvOr("KAFKA_TOPIC", "payment")
+	CREATE_ORDER_TOPIC = utils.GetenvOr("CREATE_ORDER_TOPIC", "create-order")
+	UPDATE_ORDER_TOPIC = utils.GetenvOr("UPDATE_ORDER_TOPIC", "update-order")
 	var err error
 	PARTITION, err = strconv.Atoi(utils.GetenvOr("KAFKA_TOPIC_PARTITION", "5"))
 	KAFKA_ADDR = utils.GetenvOr("KAFKA_ADDR", "localhost:9092")
@@ -48,19 +67,9 @@ func InitializeKafka() {
 	}
 	defer conn.Close()
 
-	if !isExisted(conn, TOPIC) {
-		topicConfigs := []kafka.TopicConfig{
-			{
-				Topic:             TOPIC,
-				NumPartitions:     PARTITION,
-				ReplicationFactor: 1,
-			},
-		}
+	initializeTopic(conn, CREATE_ORDER_TOPIC)
+	initializeTopic(conn, UPDATE_ORDER_TOPIC)
 
-		err := conn.CreateTopics(topicConfigs...)
-		if err != nil {
-			panic(err.Error())
-		}
-	}
-	messageRead(TOPIC)
+	messageRead(CREATE_ORDER_TOPIC)
+	messageRead(UPDATE_ORDER_TOPIC)
 }

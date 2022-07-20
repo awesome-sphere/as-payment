@@ -10,10 +10,18 @@ import (
 )
 
 func readerInit(topic_name string, groupBalancers []kafka.GroupBalancer) *kafka.Reader {
+	var groupID string
+	switch topic_name {
+	case CREATE_ORDER_TOPIC:
+		groupID = "create-order-consumer"
+	case UPDATE_ORDER_TOPIC:
+		groupID = "update-order-consumer"
+	}
+
 	config := kafka.ReaderConfig{
 		Brokers:        []string{KAFKA_ADDR},
 		Topic:          topic_name,
-		GroupID:        "payment-consumer",
+		GroupID:        groupID,
 		MinBytes:       10e3, // 10KB
 		MaxBytes:       10e6, // 10MB
 		GroupBalancers: groupBalancers,
@@ -22,7 +30,7 @@ func readerInit(topic_name string, groupBalancers []kafka.GroupBalancer) *kafka.
 	return r
 }
 
-func readerRead(r *kafka.Reader) {
+func readerRead(r *kafka.Reader, topic_name string) {
 	defer r.Close()
 	for {
 		msg, err := r.ReadMessage(context.Background())
@@ -30,14 +38,19 @@ func readerRead(r *kafka.Reader) {
 			log.Fatal("could not read message: " + err.Error())
 			break
 		}
-		var val MessageInterface
+		var val BookingMessageInterface
 		err = json.Unmarshal(msg.Value, &val)
 
 		if err != nil {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
+		switch topic_name {
+		case CREATE_ORDER_TOPIC:
+			db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
+		case UPDATE_ORDER_TOPIC:
+			// TODO: implement me
+		}
 	}
 }
 
@@ -50,6 +63,6 @@ func messageRead(topic_name string) {
 		readers = append(readers, readerInit(topic_name, groupBalancers))
 	}
 	for _, reader := range readers {
-		go readerRead(reader)
+		go readerRead(reader, topic_name)
 	}
 }

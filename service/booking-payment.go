@@ -27,14 +27,14 @@ func TicketPayment(c *gin.Context) {
 			})
 			return
 		}
-		kafka_message := &kafka.MessageInterface{
+		kafka_message := &kafka.BookingMessageInterface{
 			UserID:     int(user_id),
 			Price:      payment_s.Price,
 			TimeSlotId: payment_s.TimeSlotId,
 			TheaterId:  payment_s.TheaterID,
 			SeatNumber: payment_s.SeatID,
 		}
-		is_successful, err := kafka.PushMessage(kafka_message)
+		is_successful, err := kafka.PushMessage(kafka_message, kafka.CREATE_ORDER_TOPIC, payment_s.TheaterID)
 		print(is_successful)
 		if is_successful {
 			c.JSON(http.StatusOK, gin.H{
