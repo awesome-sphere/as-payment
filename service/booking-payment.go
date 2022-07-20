@@ -34,7 +34,7 @@ func AddOrder(c *gin.Context) {
 			TheaterId:  payment_s.TheaterID,
 			SeatNumber: payment_s.SeatID,
 		}
-		is_successful, err := kafka.PushMessage(kafka_message, kafka.CREATE_ORDER_TOPIC, payment_s.TheaterID)
+		is_successful, err := kafka.CreateTopic(kafka_message, kafka.CREATE_ORDER_TOPIC, payment_s.TheaterID)
 		print(is_successful)
 		if is_successful {
 			c.JSON(http.StatusOK, gin.H{
