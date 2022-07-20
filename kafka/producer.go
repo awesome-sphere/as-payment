@@ -10,7 +10,7 @@ import (
 	"github.com/segmentio/kafka-go/snappy"
 )
 
-func PushMessage(value *BookingMessageInterface, topic string, partition int) (bool, error) {
+func PushMessage(value *CreateOrderMessageInterface, topic string, partition int) (bool, error) {
 	config := kafka.WriterConfig{
 		Brokers:          []string{KAFKA_ADDR},
 		Topic:            topic,

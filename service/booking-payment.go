@@ -27,7 +27,7 @@ func AddOrder(c *gin.Context) {
 			})
 			return
 		}
-		kafka_message := &kafka.BookingMessageInterface{
+		kafka_message := &kafka.CreateOrderMessageInterface{
 			UserID:     int(user_id),
 			Price:      payment_s.Price,
 			TimeSlotId: payment_s.TimeSlotId,

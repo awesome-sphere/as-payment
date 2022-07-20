@@ -30,7 +30,7 @@ func readerInit(topic_name string, groupBalancers []kafka.GroupBalancer) *kafka.
 	return r
 }
 
-func readerRead(r *kafka.Reader, topic_name string) {
+func createOrderRead(r *kafka.Reader, topic_name string) {
 	defer r.Close()
 	for {
 		msg, err := r.ReadMessage(context.Background())
@@ -38,19 +38,37 @@ func readerRead(r *kafka.Reader, topic_name string) {
 			log.Fatal("could not read message: " + err.Error())
 			break
 		}
-		var val BookingMessageInterface
+
+		var val CreateOrderMessageInterface
+
 		err = json.Unmarshal(msg.Value, &val)
 
 		if err != nil {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		switch topic_name {
-		case CREATE_ORDER_TOPIC:
-			db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
-		case UPDATE_ORDER_TOPIC:
-			// TODO: implement me
+		db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
+	}
+}
+
+func updateOrderRead(r *kafka.Reader, topic_name string) {
+	defer r.Close()
+	for {
+		msg, err := r.ReadMessage(context.Background())
+		if err != nil {
+			log.Fatal("could not read message: " + err.Error())
+			break
 		}
+
+		var val CreateOrderMessageInterface
+
+		err = json.Unmarshal(msg.Value, &val)
+
+		if err != nil {
+			log.Fatalf("Failed to unmarshal message: %v", err.Error())
+			continue
+		}
+		// TODO: implement me
 	}
 }
 
@@ -63,6 +81,12 @@ func messageRead(topic_name string) {
 		readers = append(readers, readerInit(topic_name, groupBalancers))
 	}
 	for _, reader := range readers {
-		go readerRead(reader, topic_name)
+		switch topic_name {
+		case CREATE_ORDER_TOPIC:
+			go createOrderRead(reader, topic_name)
+		case UPDATE_ORDER_TOPIC:
+			go updateOrderRead(reader, topic_name)
+		}
+
 	}
 }
