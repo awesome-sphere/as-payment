@@ -18,6 +18,7 @@ func main() {
 	jwt.InitializeJWTSettings()
 	kafka.InitializeKafka()
 
-	router.POST("/payment/submit-payment", service.TicketPayment)
+	router.POST("/payment/submit-payment", service.AddOrder)
+	router.POST("/payment/pay-order", service.PayOrder)
 	router.Run(":9003")
 }

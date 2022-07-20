@@ -2,7 +2,6 @@ package db
 
 import (
 	"log"
-	"time"
 
 	"github.com/awesome-sphere/as-payment/models"
 )
@@ -21,7 +20,13 @@ import (
 // OrderID int64 `json:"order_id" gorm:"not null"`
 
 func CreateUserHistory(user_id int, time_slot_id int, theater_id int, seat_number []int, price int) {
-	event := models.Order{UserID: int64(user_id), Duration: time.Now(), Price: int64(price), Status: models.Awaiting}
+	event := models.Order{
+		UserID:     int64(user_id),
+		TimeSlotID: int64(time_slot_id),
+		TheaterID:  int64(theater_id),
+		Price:      int64(price),
+		Status:     models.Awaiting,
+	}
 	err := DB.Create(&event).Error
 	if err != nil {
 		log.Fatalf("Failed to update user history: %v", err.Error())

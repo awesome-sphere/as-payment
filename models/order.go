@@ -1,7 +1,5 @@
 package models
 
-import "time"
-
 type OrderStatus string
 
 const (
@@ -12,9 +10,10 @@ const (
 )
 
 type Order struct {
-	ID       int64       `json:"id" gorm:"primaryKey;autoincrement;not null"`
-	UserID   int64       `json:"user_id" gorm:"not null"`
-	Duration time.Time   `json:"duration" gorm:"not null"`
-	Price    int64       `json:"price"`
-	Status   OrderStatus `json:"order_status" sql:"type:order_status"`
+	ID         int64       `json:"id" gorm:"primaryKey;autoincrement;not null"`
+	UserID     int64       `json:"user_id" gorm:"not null"`
+	TimeSlotID int64       `json:"time_slot_id" gorm:"not null"`
+	TheaterID  int64       `json:"theater_id" gorm:"not null"`
+	Price      int64       `json:"price"`
+	Status     OrderStatus `json:"order_status" sql:"type:order_status"`
 }

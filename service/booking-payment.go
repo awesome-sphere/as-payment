@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TicketPayment(c *gin.Context) {
+func AddOrder(c *gin.Context) {
 	is_valid, claim := jwt.AuthorizeToken(c)
 	fmt.Printf("%v: %t", claim["user_id"], claim["user_id"])
 	if is_valid {
