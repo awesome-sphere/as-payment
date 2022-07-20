@@ -14,7 +14,7 @@ func AddOrder(c *gin.Context) {
 	is_valid, claim := jwt.AuthorizeToken(c)
 	fmt.Printf("%v: %t", claim["user_id"], claim["user_id"])
 	if is_valid {
-		var payment_s serializer.PaymentSerializer
+		var payment_s serializer.CreateOrderSerializer
 		if err := c.BindJSON(&payment_s); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
