@@ -20,30 +20,22 @@ import (
 // Order   Order `gorm:"foreignKey:OrderID"`
 // OrderID int64 `json:"order_id" gorm:"not null"`
 
-func UpdateUserHistory(user_id int, time_slot_id int, theater_id int, seat_number []int, price int) {
-	// TO FIX/RECHECK
-
-	// Question:
-	//   * how to get duration and status?
-	//   * how to get OrderID?
-
-	// mock duration as time.Now() and status as Paid for testing
-	event := models.Order{UserID: int64(user_id), Duration: time.Now(), Price: int64(price), Status: models.Paid}
+func CreateUserHistory(user_id int, time_slot_id int, theater_id int, seat_number []int, price int) {
+	event := models.Order{UserID: int64(user_id), Duration: time.Now(), Price: int64(price), Status: models.Awaiting}
 	err := DB.Create(&event).Error
 	if err != nil {
 		log.Fatalf("Failed to update user history: %v", err.Error())
 		return
 	} else {
 		for _, elt := range seat_number {
-			history := models.OrderSeats{SeatID: int64(elt), Order: event}
+			history := models.OrderSeats{SeatID: int64(elt), Order: event, OrderID: event.ID}
 			err := DB.Create(&history).Error
 			if err != nil {
 				log.Fatalf("Failed to update booking history: %v", err.Error())
 				return
 			}
-			log.Printf("OrderID: %d | SeatID: %d | Status: %s | Price: %d", history.OrderID, elt, event.Status, event.Price)
+			log.Printf("SeatID: %d | Status: %s | Price: %d", elt, event.Status, event.Price)
 		}
 		log.Printf("Successfully updating %d's purchase history", user_id)
-
 	}
 }

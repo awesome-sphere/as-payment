@@ -37,7 +37,7 @@ func readerRead(r *kafka.Reader) {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
+		db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
 	}
 }
 
