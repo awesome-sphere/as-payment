@@ -3,29 +3,27 @@ package service
 import (
 	"net/http"
 
+	"github.com/awesome-sphere/as-payment/db/models"
 	"github.com/awesome-sphere/as-payment/kafka"
 	"github.com/awesome-sphere/as-payment/kafka/interfaces"
 	"github.com/awesome-sphere/as-payment/serializer"
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: refactor services (a lot of code rewrites)
-func AddOrder(c *gin.Context) {
-	var payment_s serializer.CreateOrderSerializer
+func CancelOrder(c *gin.Context) {
+	var payment_s serializer.CancelOrderSerializer
 	if err := c.BindJSON(&payment_s); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		print(err.Error())
 		return
 	}
-
-	kafka_message := &interfaces.CreateOrderMessageInterface{
+	kafka_message := &interfaces.UpdateOrderMessageInterface{
 		UserID:     payment_s.UserID,
-		Price:      payment_s.Price,
 		TimeSlotId: payment_s.TimeSlotId,
 		TheaterId:  payment_s.TheaterID,
 		SeatNumber: payment_s.SeatID,
+		Status:     string(models.Canceled),
 	}
-	is_successful, err := kafka.CreateTopic(kafka_message, kafka.CREATE_ORDER_TOPIC, payment_s.TheaterID)
+	is_successful, err := kafka.UpdateTopic(kafka_message, kafka.UPDATE_ORDER_TOPIC, payment_s.TheaterID)
 	if is_successful {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "Updating Status...",

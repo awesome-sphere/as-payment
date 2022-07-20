@@ -7,27 +7,34 @@ import (
 )
 
 type orderStruct struct {
-	UserID int64  `json:"user_id"`
-	Status string `json:"status"`
+	OrderID int64  `json:"order_id"`
+	UserID  int64  `json:"user_id"`
+	Status  string `json:"status"`
 }
 
 func UpdateUserHistory(UserID, TimeSlotID, TheaterID, SeatID int, status models.OrderStatus) bool {
 	var order orderStruct
 
-	tx := DB.Model(&models.Order{}).Where("time_slot_id = ? AND theater_id = ?", TimeSlotID, TheaterID).Joins("JOIN order_seats ON order_seats.order_id = orders.id").Where("order_seats.seat_id = ?", SeatID).First(&models.Order{}).Scan(&order)
+	tx := DB.Model(&models.Order{}).
+		Select("orders.id, orders.user_id, orders.status, orders.time_slot_id, orders.theater_id, order_seats.order_id, order_seats.seat_id").
+		Where("time_slot_id = ? AND theater_id = ? AND status = ?", TimeSlotID, TheaterID, models.Awaiting).
+		Joins("JOIN order_seats ON order_seats.order_id = orders.id").
+		Where("order_seats.seat_id = ?", SeatID).
+		First(&models.Order{}).
+		Scan(&order)
 	if tx.Error != nil {
-		log.Fatalf("Failed to update user history: %v", tx.Error.Error())
+		log.Printf("Failed to update user history: %v\n", tx.Error.Error())
 		return false
 	}
 
-	if (int(order.UserID) == UserID) && (models.OrderStatus(order.Status) == models.Awaiting) {
-		log.Printf("This ticket is either not awaiting payment or doesn't belong to this user")
+	if int(order.UserID) != UserID {
+		log.Printf("This ticket doesn't belong to this user\n")
 		return false
 	}
 
-	tx.Update("status", status)
+	tx = DB.Model(&models.Order{}).Where("id = ?", order.OrderID).Update("status", status)
 	if tx.Error != nil {
-		log.Fatalf("Failed to update user history: %v", tx.Error.Error())
+		log.Printf("Failed to update user history: %v\n", tx.Error.Error())
 		return false
 	}
 	return status == models.Paid

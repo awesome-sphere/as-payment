@@ -21,6 +21,7 @@ func main() {
 	internal.InitializeInternalServices()
 
 	router.POST("/payment/add-order", service.AddOrder)
+	router.POST("/payment/cancel-order", service.CancelOrder)
 	router.POST("/payment/pay", service.PayOrder)
 	router.Run(":9003")
 }

@@ -31,7 +31,7 @@ func InitializeDatabase() {
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
 	db.AutoMigrate(&models.Order{}, &models.OrderSeats{})

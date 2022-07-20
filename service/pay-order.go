@@ -35,7 +35,6 @@ func PayOrder(c *gin.Context) {
 			Status:     string(models.Paid),
 		}
 		is_successful, err := kafka.UpdateTopic(kafka_message, kafka.UPDATE_ORDER_TOPIC, payment_s.TheaterID)
-		print(is_successful)
 		if is_successful {
 			c.JSON(http.StatusOK, gin.H{
 				"status": "Updating Status...",
@@ -45,6 +44,11 @@ func PayOrder(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": "Failed with error",
 			"error":  err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "Failed with error",
+			"error":  "Unauthorized. Invalid token.",
 		})
 	}
 }

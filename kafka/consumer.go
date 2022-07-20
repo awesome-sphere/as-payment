@@ -38,7 +38,7 @@ func createOrderRead(r *kafka.Reader, topic_name string) {
 	for {
 		msg, err := r.ReadMessage(context.Background())
 		if err != nil {
-			log.Fatal("could not read message: " + err.Error())
+			log.Println("could not read message: " + err.Error())
 			break
 		}
 
@@ -47,7 +47,7 @@ func createOrderRead(r *kafka.Reader, topic_name string) {
 		err = json.Unmarshal(msg.Value, &val)
 
 		if err != nil {
-			log.Fatalf("Failed to unmarshal message: %v", err.Error())
+			log.Printf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
 		db.CreateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
@@ -59,7 +59,7 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 	for {
 		msg, err := r.ReadMessage(context.Background())
 		if err != nil {
-			log.Fatal("could not read message: " + err.Error())
+			log.Println("could not read message: " + err.Error())
 			break
 		}
 
@@ -68,11 +68,11 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 		err = json.Unmarshal(msg.Value, &val)
 
 		if err != nil {
-			log.Fatalf("Failed to unmarshal message: %v", err.Error())
+			log.Printf("Failed to unmarshal message: %v]n", err.Error())
 			continue
 		}
 		if len(val.SeatNumber) == 0 {
-			log.Fatal("This order does not have any seat number")
+			log.Printf("This order does not have any seat number\n")
 			continue
 		}
 		res := db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber[0], models.OrderStatus(val.Status))
