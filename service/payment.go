@@ -38,7 +38,7 @@ func TicketPayment(c *gin.Context) {
 		print(is_successful)
 		if is_successful {
 			c.JSON(http.StatusOK, gin.H{
-				"status": "Payment Successful",
+				"status": "Updating Status...",
 			})
 			return
 		}

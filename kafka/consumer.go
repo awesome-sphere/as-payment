@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/awesome-sphere/as-payment/db"
-	"github.com/awesome-sphere/as-payment/models"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -38,7 +37,7 @@ func readerRead(r *kafka.Reader) {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price, val.Duration, models.OrderStatus(val.Status))
+		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber, val.Price)
 	}
 }
 

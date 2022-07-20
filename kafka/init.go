@@ -62,4 +62,5 @@ func InitializeKafka() {
 			panic(err.Error())
 		}
 	}
+	messageRead(TOPIC)
 }
