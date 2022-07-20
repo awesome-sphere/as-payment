@@ -3,6 +3,7 @@ package kafka
 import (
 	"strconv"
 
+	"github.com/awesome-sphere/as-payment/kafka/interfaces"
 	"github.com/awesome-sphere/as-payment/utils"
 	"github.com/segmentio/kafka-go"
 )
@@ -12,17 +13,17 @@ var UPDATE_ORDER_TOPIC string
 var PARTITION int
 var KAFKA_ADDR string
 
-func ListTopics(connector *kafka.Conn) map[string]*TopicInterface {
+func ListTopics(connector *kafka.Conn) map[string]*interfaces.TopicInterface {
 	partitions, err := connector.ReadPartitions()
 	if err != nil {
 		panic(err.Error())
 	}
-	m := make(map[string]*TopicInterface)
+	m := make(map[string]*interfaces.TopicInterface)
 	for _, p := range partitions {
 		if _, ok := m[p.Topic]; ok {
 			m[p.Topic].Partition += 1
 		} else {
-			m[p.Topic] = &TopicInterface{Partition: 1}
+			m[p.Topic] = &interfaces.TopicInterface{Partition: 1}
 		}
 	}
 	return m

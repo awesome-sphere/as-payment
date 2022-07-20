@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/awesome-sphere/as-payment/kafka/interfaces"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/snappy"
 )
@@ -24,7 +25,7 @@ func pushMessage(topic string, partition int) *kafka.Writer {
 	return writer_connector
 }
 
-func UpdateTopic(value *UpdateOrderMessageInterface, topic string, partition int) (bool, error) {
+func UpdateTopic(value *interfaces.UpdateOrderMessageInterface, topic string, partition int) (bool, error) {
 	writer_connector := pushMessage(topic, partition)
 	defer writer_connector.Close()
 	new_byte_buffer := new(bytes.Buffer)
@@ -42,7 +43,7 @@ func UpdateTopic(value *UpdateOrderMessageInterface, topic string, partition int
 	return true, nil
 }
 
-func CreateTopic(value *CreateOrderMessageInterface, topic string, partition int) (bool, error) {
+func CreateTopic(value *interfaces.CreateOrderMessageInterface, topic string, partition int) (bool, error) {
 	writer_connector := pushMessage(topic, partition)
 	defer writer_connector.Close()
 	new_byte_buffer := new(bytes.Buffer)

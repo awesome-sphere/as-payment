@@ -6,6 +6,7 @@ import (
 	"github.com/awesome-sphere/as-payment/db/models"
 	"github.com/awesome-sphere/as-payment/jwt"
 	"github.com/awesome-sphere/as-payment/kafka"
+	"github.com/awesome-sphere/as-payment/kafka/interfaces"
 	"github.com/awesome-sphere/as-payment/serializer"
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,7 @@ func PayOrder(c *gin.Context) {
 			})
 			return
 		}
-		kafka_message := &kafka.UpdateOrderMessageInterface{
+		kafka_message := &interfaces.UpdateOrderMessageInterface{
 			UserID:     int(user_id),
 			TimeSlotId: payment_s.TimeSlotId,
 			TheaterId:  payment_s.TheaterID,

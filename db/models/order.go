@@ -3,10 +3,9 @@ package models
 type OrderStatus string
 
 const (
-	Paid      OrderStatus = "PAID"
-	Failed    OrderStatus = "FAILED"
-	Awaiting  OrderStatus = "AWAITING"
-	Cancelled OrderStatus = "CANCELLED"
+	Paid     OrderStatus = "PAID"
+	Awaiting OrderStatus = "AWAITING"
+	Canceled OrderStatus = "CANCELED"
 )
 
 type Order struct {

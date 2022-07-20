@@ -7,6 +7,8 @@ import (
 
 	"github.com/awesome-sphere/as-payment/db"
 	"github.com/awesome-sphere/as-payment/db/models"
+	"github.com/awesome-sphere/as-payment/internal"
+	"github.com/awesome-sphere/as-payment/kafka/interfaces"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -40,7 +42,7 @@ func createOrderRead(r *kafka.Reader, topic_name string) {
 			break
 		}
 
-		var val CreateOrderMessageInterface
+		var val interfaces.CreateOrderMessageInterface
 
 		err = json.Unmarshal(msg.Value, &val)
 
@@ -61,7 +63,7 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 			break
 		}
 
-		var val UpdateOrderMessageInterface
+		var val interfaces.UpdateOrderMessageInterface
 
 		err = json.Unmarshal(msg.Value, &val)
 
@@ -73,7 +75,10 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 			log.Fatal("This order does not have any seat number")
 			continue
 		}
-		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber[0], models.OrderStatus(val.Status))
+		res := db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber[0], models.OrderStatus(val.Status))
+		if res {
+			internal.NotifyOtherServices(val)
+		}
 	}
 }
 
