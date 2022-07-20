@@ -3,44 +3,27 @@ package db
 import (
 	"log"
 
-	"github.com/awesome-sphere/as-payment/models"
+	"github.com/awesome-sphere/as-payment/db/models"
 )
 
-// order.go
-// ID       int64       `json:"id" gorm:"primaryKey;autoincrement;not null"`
-// UserID   int64       `json:"user_id" gorm:"not null"`
-// Duration time.Time   `json:"duration" gorm:"not null"`
-// Price    int64       `json:"price"`
-// Status   OrderStatus `json:"order_status" sql:"type:order_status"`
+type orderStruct struct {
+	UserID int64  `json:"user_id"`
+	Status string `json:"status"`
+}
 
-// orderseats.go
-// ID      int64 `json:"id" gorm:"primaryKey;autoincrement;not null"`
-// SeatID  int64 `json:"seat_id" gorm:"not null"`
-// Order   Order `gorm:"foreignKey:OrderID"`
-// OrderID int64 `json:"order_id" gorm:"not null"`
+func UpdateUserHistory(UserID, TimeSlotID, TheaterID, SeatID int, status models.OrderStatus) {
+	var order orderStruct
 
-func CreateUserHistory(user_id int, time_slot_id int, theater_id int, seat_number []int, price int) {
-	event := models.Order{
-		UserID:     int64(user_id),
-		TimeSlotID: int64(time_slot_id),
-		TheaterID:  int64(theater_id),
-		Price:      int64(price),
-		Status:     models.Awaiting,
-	}
-	err := DB.Create(&event).Error
-	if err != nil {
-		log.Fatalf("Failed to update user history: %v", err.Error())
+	tx := DB.Model(&models.Order{}).Where("time_slot_id = ? AND theater_id = ?", TimeSlotID, TheaterID).Joins("JOIN order_seats ON order_seats.order_id = orders.id").Where("order_seats.seat_id = ?", SeatID).First(&models.Order{}).Scan(&order)
+	if tx.Error != nil {
+		log.Fatalf("Failed to update user history: %v", tx.Error.Error())
 		return
-	} else {
-		for _, elt := range seat_number {
-			history := models.OrderSeats{SeatID: int64(elt), Order: event, OrderID: event.ID}
-			err := DB.Create(&history).Error
-			if err != nil {
-				log.Fatalf("Failed to update booking history: %v", err.Error())
-				return
-			}
-			log.Printf("SeatID: %d | Status: %s | Price: %d", elt, event.Status, event.Price)
-		}
-		log.Printf("Successfully updating %d's purchase history", user_id)
 	}
+
+	if (int(order.UserID) == UserID) && (models.OrderStatus(order.Status) == models.Awaiting) {
+		log.Printf("This ticket is either not awaiting payment or doesn't belong to this user")
+		return
+	}
+
+	tx.Update("status", status)
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/awesome-sphere/as-payment/db"
+	"github.com/awesome-sphere/as-payment/db/models"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -60,7 +61,7 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 			break
 		}
 
-		var val CreateOrderMessageInterface
+		var val UpdateOrderMessageInterface
 
 		err = json.Unmarshal(msg.Value, &val)
 
@@ -68,7 +69,11 @@ func updateOrderRead(r *kafka.Reader, topic_name string) {
 			log.Fatalf("Failed to unmarshal message: %v", err.Error())
 			continue
 		}
-		// TODO: implement me
+		if len(val.SeatNumber) == 0 {
+			log.Fatal("This order does not have any seat number")
+			continue
+		}
+		db.UpdateUserHistory(val.UserID, val.TimeSlotId, val.TheaterId, val.SeatNumber[0], models.OrderStatus(val.Status))
 	}
 }
 

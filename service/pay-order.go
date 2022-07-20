@@ -3,6 +3,7 @@ package service
 import (
 	"net/http"
 
+	"github.com/awesome-sphere/as-payment/db/models"
 	"github.com/awesome-sphere/as-payment/jwt"
 	"github.com/awesome-sphere/as-payment/kafka"
 	"github.com/awesome-sphere/as-payment/serializer"
@@ -30,6 +31,7 @@ func PayOrder(c *gin.Context) {
 			TimeSlotId: payment_s.TimeSlotId,
 			TheaterId:  payment_s.TheaterID,
 			SeatNumber: payment_s.SeatID,
+			Status:     string(models.Paid),
 		}
 		is_successful, err := kafka.UpdateTopic(kafka_message, kafka.UPDATE_ORDER_TOPIC, payment_s.TheaterID)
 		print(is_successful)

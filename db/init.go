@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/awesome-sphere/as-payment/models"
+	"github.com/awesome-sphere/as-payment/db/models"
 	"github.com/awesome-sphere/as-payment/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
