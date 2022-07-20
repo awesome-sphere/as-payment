@@ -1,7 +1,5 @@
 package kafka
 
-// the one we put into postman
-
 type CreateOrderMessageInterface struct {
 	UserID     int   `json:"user_id"`
 	TimeSlotId int   `json:"time_slot_id"`
