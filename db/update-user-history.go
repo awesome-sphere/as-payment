@@ -20,17 +20,17 @@ import (
 // Order   Order `gorm:"foreignKey:OrderID"`
 // OrderID int64 `json:"order_id" gorm:"not null"`
 
-func UpdateUserHistory(user_id int64, time_slot_id int, theater_id int, seat_number []int, price int64, duration time.Time, status models.OrderStatus) {
+func UpdateUserHistory(user_id int, time_slot_id int, theater_id int, seat_number []int, price int, duration time.Time, status models.OrderStatus) {
 	// TO FIX/RECHECK
-	err := DB.Create(&models.Order{UserID: user_id, Duration: duration, Price: price, Status: status}).Error
+	err := DB.Create(&models.Order{UserID: int64(user_id), Duration: duration, Price: int64(price), Status: status}).Error
 	if err != nil {
-		log.Fatalf("Failed to set key: %v", err.Error())
+		log.Fatalf("Failed to update booking history: %v", err.Error())
 		return
 	} else {
 		for _, elt := range seat_number {
 			err := DB.Create(&models.OrderSeats{SeatID: int64(elt)}).Error
 			if err != nil {
-				log.Fatalf("Failed to set key: %v", err.Error())
+				log.Fatalf("Failed to update booking history: %v", err.Error())
 				return
 			}
 		}

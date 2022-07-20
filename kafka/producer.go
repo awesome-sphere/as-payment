@@ -38,14 +38,3 @@ func PushMessage(value *MessageInterface) (bool, error) {
 	}
 	return true, nil
 }
-
-func SubmitToConsumer(user_id int, time_slot_id int, theater_id int, seat_number []int, price int, duration time.Time) {
-	PushMessage(&MessageInterface{
-		UserID:     user_id,
-		TimeSlotId: time_slot_id,
-		TheaterId:  theater_id,
-		SeatNumber: seat_number,
-		Price:      price,
-		Duration:   time.Now(),
-	})
-}

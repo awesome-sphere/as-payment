@@ -9,4 +9,5 @@ type MessageInterface struct {
 	SeatNumber []int     `json:"seat_number"`
 	Price      int       `json:"price"`
 	Duration   time.Time `json:"duration" gorm:"not null"`
+	Status     string    `json:"status"`
 }
