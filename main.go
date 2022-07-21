@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/awesome-sphere/as-payment/db"
-	"github.com/awesome-sphere/as-payment/internal"
 	"github.com/awesome-sphere/as-payment/jwt"
 	"github.com/awesome-sphere/as-payment/kafka"
 	"github.com/awesome-sphere/as-payment/service"
@@ -18,7 +17,6 @@ func main() {
 	db.InitializeDatabase()
 	jwt.InitializeJWTSettings()
 	kafka.InitializeKafka()
-	internal.InitializeInternalServices()
 
 	router.POST("/payment/add-order", service.AddOrder)
 	router.POST("/payment/cancel-order", service.CancelOrder)

@@ -70,7 +70,4 @@ func InitializeKafka() {
 
 	initializeTopic(conn, CREATE_ORDER_TOPIC)
 	initializeTopic(conn, UPDATE_ORDER_TOPIC)
-
-	messageRead(CREATE_ORDER_TOPIC)
-	messageRead(UPDATE_ORDER_TOPIC)
 }
