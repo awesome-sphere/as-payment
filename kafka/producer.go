@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/awesome-sphere/as-payment/kafka/interfaces"
@@ -30,6 +31,7 @@ func UpdateTopic(value *interfaces.UpdateOrderMessageInterface, topic string, pa
 	defer writer_connector.Close()
 	new_byte_buffer := new(bytes.Buffer)
 	json.NewEncoder(new_byte_buffer).Encode(value)
+	log.Printf("Writing message to topic [%v] partition [%v]\n", topic, partition)
 	err := writer_connector.WriteMessages(
 		context.Background(),
 		kafka.Message{
@@ -38,8 +40,10 @@ func UpdateTopic(value *interfaces.UpdateOrderMessageInterface, topic string, pa
 		},
 	)
 	if err != nil {
+		log.Printf("Failed to write message to topic [%v] partition [%v]\n", topic, partition)
 		return false, err
 	}
+	log.Printf("Message written to topic [%v] partition [%v]\n", topic, partition)
 	return true, nil
 }
 
